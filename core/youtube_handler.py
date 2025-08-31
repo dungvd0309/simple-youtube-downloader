@@ -1,5 +1,4 @@
 from pytubefix import YouTube, Stream, Caption, StreamQuery, CaptionQuery
-from menu_template import clear_console, press_to_continue
 import os 
 import subprocess
 import requests
@@ -11,12 +10,23 @@ def create_output_folder():
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
-def sanitize_filename(name: str):
+
+def sanitize_filename(name: str) -> str:
     """Remove illegal characters from file name."""
     illegal = '\\/:*?"<>|'
     trans = str.maketrans('', '', illegal)
     name = name.translate(trans)
     return name
+
+
+def stream_to_string(stream: Stream) -> str:
+    """Return a string containing some info about the stream"""
+    parts = ['mime_type="{stream.mime_type}"']
+    if stream.includes_video_track:
+        parts.extend(['res="{stream.resolution}"', 'fps="{stream.fps}"', 'vcodec="{stream.video_codec}"'])
+    else:
+        parts.extend(['abr="{stream.abr}"', 'acodec="{stream.audio_codec}"'])
+    return " ".join(parts).format(stream=stream)
 
 
 def get_video_stream_list(yt: YouTube) -> StreamQuery:
@@ -30,9 +40,11 @@ def get_audio_stream_list(yt: YouTube) -> StreamQuery:
     ys = yt.streams.filter(is_dash=True, only_audio=True)
     return ys
 
+
 def get_caption_list(yt: YouTube) -> CaptionQuery:
     """Get a :class:`CaptionQuery <CaptionQuery>`."""
     return yt.captions
+
 
 def download_video(yt: YouTube, video: Stream, audio: Stream):
     """Download video and audio stream and merge them with ffmpeg."""
@@ -108,17 +120,6 @@ def download_thumbnail(yt: YouTube):
         print(f"Download complete! File saved to: {os.path.abspath(filepath)}")
     except requests.exceptions.RequestException as e:
         print(f"Error during download: " + e)
-
-
-def stream_to_string(stream: Stream) -> str:
-    """Return a string containing some info about the stream"""
-    parts = ['mime_type="{stream.mime_type}"']
-    if stream.includes_video_track:
-        parts.extend(['res="{stream.resolution}"', 'fps="{stream.fps}"', 'vcodec="{stream.video_codec}"'])
-    else:
-        parts.extend(['abr="{stream.abr}"', 'acodec="{stream.audio_codec}"'])
-    return " ".join(parts).format(stream=stream)
-
 
 
 # MODULE TEST AREA
