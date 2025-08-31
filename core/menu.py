@@ -1,11 +1,10 @@
-from menu_template import OptionMenu, MenuItem, TextPromptMenu, ResultMenu, clear_console, press_to_continue
-import sys
-import msvcrt
-from tqdm import tqdm
-import pytubefix.exceptions as yt_exceptions
 from pytubefix import YouTube, Stream
+import pytubefix.exceptions as yt_exceptions
+from tqdm import tqdm
 import urllib.error
-from youtube_handler import *
+
+from core.youtube_handler import *
+from core.menu_template import OptionMenu, MenuItem, TextPromptMenu, ResultMenu, clear_console, press_to_continue
 
 
 PROGRAM_TITLE = "Simple YouTube Downloader"
@@ -181,7 +180,11 @@ class DownloadMenu(OptionMenu):
         self.add_menu_item(MenuItem("2", "Video only", menu=VideoSelectionMenu(self.yt)))
         self.add_menu_item(MenuItem("3", "Audio only", menu=AudioSelectionMenu(self.yt)))
         self.add_menu_item(MenuItem("4", "Caption", menu=CaptionSelectionMenu(self.yt)))
-        self.add_menu_item(MenuItem("5", "Thumbnail", lambda:func(5)))
+        self.add_menu_item(MenuItem("5", "Thumbnail", lambda:(
+            clear_console(),
+            download_thumbnail(self.yt),
+            press_to_continue()
+        )))
         self.add_menu_item(MenuItem("b", "Back", isExitOption=True))
         self.add_menu_item(MenuItem("q", "Quit", quit))
 
@@ -215,7 +218,7 @@ class DownloadMenu(OptionMenu):
         video = video_sel_menu.get_selected_stream()
         if video is None:
             return
-    
+
         # Choose audio stream
         audio_sel_menu = AudioSelectionMenu(self.yt, selection_only=True)
         audio_sel_menu.execute_menu()
@@ -227,17 +230,17 @@ class DownloadMenu(OptionMenu):
         download_video(self.yt, video, audio)
         press_to_continue()
 
-
     
 class UrlMenu(TextPromptMenu):
     pass
 
-if __name__ == "__main__": 
+
+def run_menu():
     while True:
         # url_menu = UrlMenu("YouTube URL:")
         # url = url_menu.execute_menu()
 
-        url = "https://www.youtube.com/watch?v=8mLG0gDKrbs"
+        url = "https://www.youtube.com/watch?v=8mLG0gDKrbs" # TEST URL
 
         if url:
             if url.lower() in ["q", "quit", "exit"]:

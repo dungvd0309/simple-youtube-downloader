@@ -5,6 +5,7 @@ import msvcrt
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+
 def press_to_continue():
     print("Press any key to continue...", end="", flush=True)
     msvcrt.getch()

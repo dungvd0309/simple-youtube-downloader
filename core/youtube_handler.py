@@ -11,6 +11,12 @@ def create_output_folder():
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
+def check_file_exist(path) -> bool:
+    """Check if file exists and notify the user"""
+    if os.path.exists(path):
+        print(f"{os.path.abspath(path)} already exists. No action was taken")
+        return True
+    return False
 
 def sanitize_filename(name: str) -> str:
     """Remove illegal characters from file name."""
@@ -62,11 +68,20 @@ def get_caption_list(yt: YouTube) -> CaptionQuery:
 def download_video(yt: YouTube, video: Stream, audio: Stream):
     """Download video and audio stream and merge them with ffmpeg."""
     title = sanitize_filename(yt.title)
-    filepath = f"[{video.resolution}_{video.fps}fps_{audio.abr}] {title}.mp4"
+    filename = f"[{video.resolution}_{video.fps}fps_{audio.abr}] {title}.mp4"
+    filepath = f"{os.path.abspath(OUTPUT_PATH)}/{filename}"
+    if check_file_exist(filepath):
+        return
 
     # Download video and audio separately
-    video_path = video.download(filename="video_only.mp4")
-    audio_path = audio.download(filename="audio_only.m4a")
+    video_path = video.download(
+        output_path=OUTPUT_PATH,
+        filename="video_only.mp4"
+    )
+    audio_path = audio.download(
+        output_path=OUTPUT_PATH,
+        filename="audio_only.m4a"
+    )
 
     # Merge video and audio using FFMPEG
     print()
@@ -82,7 +97,7 @@ def download_video(yt: YouTube, video: Stream, audio: Stream):
     subprocess.run(cmd, check=True, 
                    stdout=subprocess.DEVNULL, 
                    stderr=subprocess.STDOUT) # Run FFMPEG and hide its output
-
+    
     print(f"Deleting temp files...")
     os.remove(video_path)
     os.remove(audio_path)
@@ -93,21 +108,31 @@ def download_video(yt: YouTube, video: Stream, audio: Stream):
 
 def download_video_only(yt: YouTube, stream: Stream):
     """Download .mp4 video from stream."""
-    video = stream
     title = sanitize_filename(yt.title)
+    filename = f"[{stream.resolution}_{stream.fps}fps] {title}.mp4"
+    filepath = f"{os.path.abspath(OUTPUT_PATH)}/{filename}"
+
+    if check_file_exist(filepath):
+        return
+    
     create_output_folder()
-    video.download( 
+    stream.download( 
         output_path=OUTPUT_PATH,
-        filename=f"[{stream.resolution}_{stream.fps}fps] {title}.mp4"
+        filename=filename
     )
 
 
 def download_audio_only(yt: YouTube, stream: Stream):
     """Download .m4a audio from stream."""
-    audio = stream
     title = sanitize_filename(yt.title)
+    filename = f"[{stream.abr}] {title}.m4a"
+    filepath = f"{os.path.abspath(OUTPUT_PATH)}/{filename}"
+
+    if check_file_exist(filepath):
+        return
+
     create_output_folder()
-    audio.download(
+    stream.download(
         output_path= OUTPUT_PATH,
         filename=f"[{stream.abr}] {title}.m4a"
     )
@@ -119,6 +144,9 @@ def download_caption(yt: YouTube, code: str):
     title = sanitize_filename(yt.title)
     filename = f"[{code}] {title}.srt"
     filepath = f"{OUTPUT_PATH}/{filename}"
+
+    if check_file_exist(filepath):
+        return
     
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(cap.generate_srt_captions())
@@ -131,6 +159,9 @@ def download_thumbnail(yt: YouTube):
     title = sanitize_filename(yt.title)
     filename = f"{title}.jpg"
     filepath = f"{OUTPUT_PATH}/{filename}"
+
+    if check_file_exist(filepath):
+        return
     
     try:
         response = requests.get(thumbnail_url)
@@ -141,19 +172,3 @@ def download_thumbnail(yt: YouTube):
     except requests.exceptions.RequestException as e:
         print(f"Error during download: " + e)
 
-
-# MODULE TEST AREA
-if __name__ == "__main__":
-    url = "https://www.youtube.com/watch?v=8mLG0gDKrbs"
-    # url = input("URL: ")
-    
-    yt = YouTube(url)
-    # list_stream(yt)
-    # file = yt.streams.get_audio_only(subtype="webm")
-    # print(file)
-    # file.download()
-    
-    # download_thumbnail(yt)
-    if not os.path.exists(OUTPUT_PATH):
-        os.makedirs(OUTPUT_PATH)
-        os.path.abspath()
