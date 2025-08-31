@@ -14,16 +14,16 @@ Console menu program for downloading YouTube video, implemented using [PyTubeFix
 
 ## Dependencies
 
-- Python >= 3.3.
-- [PyTubeFix](https://github.com/JuanBindez/pytubefix) library.
+- Python >= 3.12.
+- Library: [PyTubeFix](https://github.com/JuanBindez/pytubefix), requests, tqdm.
 
 ## Installation
 
-- Install any [Python >= 3.3](https://www.python.org/downloads/).
-- Install [PyTubeFix](https://github.com/JuanBindez/pytubefix) library:
+- Install any [Python >= 3.12](https://www.python.org/downloads/).
+- Install requirements:
 
 ```bash
-pip install pytubefix
+pip install -r requirements.txt
 ```
 
 ## How to run

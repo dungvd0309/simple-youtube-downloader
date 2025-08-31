@@ -237,10 +237,10 @@ class UrlMenu(TextPromptMenu):
 
 def run_menu():
     while True:
-        # url_menu = UrlMenu("YouTube URL:")
-        # url = url_menu.execute_menu()
+        url_menu = UrlMenu("YouTube URL:")
+        url = url_menu.execute_menu()
 
-        url = "https://www.youtube.com/watch?v=8mLG0gDKrbs" # TEST URL
+        # url = "https://www.youtube.com/watch?v=8mLG0gDKrbs" # TEST URL
 
         if url:
             if url.lower() in ["q", "quit", "exit"]:
