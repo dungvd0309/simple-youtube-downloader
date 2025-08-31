@@ -1,4 +1,4 @@
-# SIMPLE YOUTUBE DOWNLOADER
+# Simple YouTube Downloader
 
 Console menu program for downloading YouTube video, implemented using [PyTubeFix](https://github.com/JuanBindez/pytubefix)
 
