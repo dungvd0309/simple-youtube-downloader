@@ -15,11 +15,13 @@ Console menu program for downloading YouTube video, implemented using [PyTubeFix
 ## Dependencies
 
 - Python >= 3.12.
+- FFMPEG for merging video and audio files.
 - Library: [PyTubeFix](https://github.com/JuanBindez/pytubefix), requests, tqdm.
 
 ## Installation
 
 - Install any [Python >= 3.12](https://www.python.org/downloads/).
+- Install [FFMPEG](https://www.ffmpeg.org/download.html).
 - Clone this repo to your device:
 
 ```bash
