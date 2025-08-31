@@ -20,6 +20,12 @@ Console menu program for downloading YouTube video, implemented using [PyTubeFix
 ## Installation
 
 - Install any [Python >= 3.12](https://www.python.org/downloads/).
+- Clone this repo to your device:
+
+```bash
+git clone https://github.com/dungvd0309/simple-youtube-downloader
+```
+
 - Install requirements:
 
 ```bash
