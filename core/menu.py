@@ -23,9 +23,9 @@ def func(num = None):
 # ==========================
 #       MENU CLASSES
 # ==========================
-# TODO-1: Show file size in menu selection
-# TODO : Remove args= in menu, use lambda function instead(still haven't remove arg)
-# TODO: Add more video info
+# TODO: Show file size in menu selection (in gb, mb, kb)
+# TODO: Add more video info in main menu
+# TODO: Make every output files show in output folder
 
 class VideoSelectionMenu(OptionMenu):
 
@@ -171,6 +171,9 @@ class DownloadMenu(OptionMenu):
     def display_menu(self):
         print(f"URL: {self.url}")
         print(f"Title: {self.yt.title}")
+        print(f"Channel: {self.yt.author}")
+
+        print()
         super().display_menu()
 
     def initialize_item_list(self):
@@ -205,13 +208,14 @@ class DownloadMenu(OptionMenu):
     def download_video_with_audio(self):
         """Handle video menu, audio menu, and merging video and audio stream."""
         clear_console()
+
         # Choose video stream
         video_sel_menu = VideoSelectionMenu(self.yt, selection_only=True)
         video_sel_menu.execute_menu()
         video = video_sel_menu.get_selected_stream()
         if video is None:
             return
-
+    
         # Choose audio stream
         audio_sel_menu = AudioSelectionMenu(self.yt, selection_only=True)
         audio_sel_menu.execute_menu()
@@ -219,6 +223,7 @@ class DownloadMenu(OptionMenu):
         if audio is None:
             return
 
+        clear_console()
         download_video(self.yt, video, audio)
         press_to_continue()
 

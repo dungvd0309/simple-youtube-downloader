@@ -1,18 +1,6 @@
 import os
 import msvcrt
 
-def clear_console_before(func):
-    def wrapper(*args, **kwargs):
-        clear_console()
-        return func(*args, **kwargs)
-    return wrapper
-
-# def print_title_before(func):
-#     def wrapper(*args, **kwargs):
-#         print(PROGRAM_TITLE)
-#         print()
-#         return func(*args, **kwargs)
-#     return wrapper
 
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -85,14 +73,12 @@ class MenuItem:
             id: int | str, 
             desc: str, 
             action: callable = None, 
-            args: list = None,
             menu: AbstractMenu = None, 
             isExitOption: bool = False
     ):
         self.id: str = str(id)
         self.desc: str = desc
         self.action: callable = action
-        self.args: list = args
         self.menu: OptionMenu = menu
         self.isExitOption: bool = isExitOption
     

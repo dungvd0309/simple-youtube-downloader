@@ -7,6 +7,7 @@ import requests
 OUTPUT_PATH = "output/"
 
 def create_output_folder():
+    """Create the output folder if it's not exist"""
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
 
@@ -21,13 +22,25 @@ def sanitize_filename(name: str) -> str:
 
 def stream_to_string(stream: Stream) -> str:
     """Return a string containing some info about the stream"""
-    parts = ['mime_type="{stream.mime_type}"']
+    parts = [f'mime_type="{stream.mime_type}"']
     if stream.includes_video_track:
-        parts.extend(['res="{stream.resolution}"', 'fps="{stream.fps}"', 'vcodec="{stream.video_codec}"'])
+        parts.extend(
+            [
+                f'res="{stream.resolution}"',
+                f'fps="{stream.fps}"',
+                f'vcodec="{stream.video_codec}"',
+            ]
+        )
     else:
-        parts.extend(['abr="{stream.abr}"', 'acodec="{stream.audio_codec}"'])
-    return " ".join(parts).format(stream=stream)
+        parts.extend(
+            [
+                f'abr="{stream.abr}"',
+                f'acodec="{stream.audio_codec}"'
+            ]
+        )
 
+    parts.append(f'file_size="{round(stream.filesize_mb, 2)}MB"')
+    return " ".join(parts)
 
 def get_video_stream_list(yt: YouTube) -> StreamQuery:
     """Get a :class:`StreamQuery <StreamQuery>` of DASH video streams."""
@@ -48,13 +61,16 @@ def get_caption_list(yt: YouTube) -> CaptionQuery:
 
 def download_video(yt: YouTube, video: Stream, audio: Stream):
     """Download video and audio stream and merge them with ffmpeg."""
+    title = sanitize_filename(yt.title)
+    filepath = f"[{video.resolution}_{video.fps}fps_{audio.abr}] {title}.mp4"
+
+    # Download video and audio separately
     video_path = video.download(filename="video_only.mp4")
     audio_path = audio.download(filename="audio_only.m4a")
 
-    print("Start merging video and audio...")
-
-    title = sanitize_filename(yt.title)
-    filepath = f"[{video.resolution}_{video.fps}fps_{audio.abr}] {title}.mp4"
+    # Merge video and audio using FFMPEG
+    print()
+    print("Merging video and audio...")
     cmd = [
         "ffmpeg", "-y",
         "-i", video_path,
@@ -63,11 +79,15 @@ def download_video(yt: YouTube, video: Stream, audio: Stream):
         "-movflags", "+faststart",
         filepath
     ]
-    subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL)
+    subprocess.run(cmd, check=True, 
+                   stdout=subprocess.DEVNULL, 
+                   stderr=subprocess.STDOUT) # Run FFMPEG and hide its output
 
+    print(f"Deleting temp files...")
     os.remove(video_path)
     os.remove(audio_path)
 
+    print()
     print(f"Completed. File saved to {os.path.abspath(filepath)}")
 
 
@@ -137,8 +157,3 @@ if __name__ == "__main__":
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
         os.path.abspath()
-
-
-
-
-
